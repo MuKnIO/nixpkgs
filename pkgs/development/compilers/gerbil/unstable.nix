@@ -7,7 +7,7 @@ callPackage ./build.nix rec {
     owner = "vyzo";
     repo = "gerbil";
     rev = "7014e282dad51978c67f2746ac3e8553c73e09a3";
-    sha256 = "sha256-q6wDEIGdtXt1shDPscKPgYZLnUr7K83aplTrL0A9p34=";
+    sha256 = "0c0nspm659ybgmqlppdv7sxzll4hwkvcp9qmcsip6d0kz0p8r9c3";
   };
   inherit gambit-support;
   gambit = gambit-unstable;
