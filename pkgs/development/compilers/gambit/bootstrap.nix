@@ -6,11 +6,11 @@
 
 gccStdenv.mkDerivation {
   pname = "gambit-bootstrap";
-  version = "4.9.3";
+  version = "4.9.4";
 
   src = fetchurl {
-    url = "http://www.iro.umontreal.ca/~gambit/download/gambit/v4.9/source/gambit-v4_9_3.tgz";
-    sha256 = "1p6172vhcrlpjgia6hsks1w4fl8rdyjf9xjh14wxfkv7dnx8a5hk";
+    url = "https://gambitscheme.org/4.9.4/gambit-v4_9_4.tgz";
+    sha256 = "025x8zi9176qwww4d3pk8aj9ab1fpqyxqz26q3v394k6bfk49yqr";
   };
 
   buildInputs = [ autoconf ];
