@@ -1,8 +1,14 @@
 { pkgs, gccStdenv, lib, coreutils,
   openssl, zlib, sqlite, libxml2, libyaml, libmysqlclient, lmdb, leveldb, postgresql,
-  version, git-version,
+  version, git-version, src,
   gambit-support,
-  gambit ? pkgs.gambit, gambit-params ? pkgs.gambit-support.stable-params, src }:
+  gambitPkgs ? [ pkgs.gambit ],
+  extraConfigureFlags ? [ "--with-gambit=${pkgs.gambit}/gambit" ],
+  gambit-params ? pkgs.gambit-support.stable-params,
+  configureDir ? "./src/",
+  extraPatch ? "",
+  install ? "(cd src; ./install)",
+  GERBIL_PREFIX_var ? "GERBIL_HOME" }:
 
 # We use Gambit, that works 10x better with GCC than Clang. See ../gambit/build.nix
 let stdenv = gccStdenv; in
@@ -18,8 +24,7 @@ stdenv.mkDerivation rec {
   # or give up and delete all tentative support for static libraries.
   #buildInputs_staticLibraries = map makeStaticLibraries buildInputs_libraries;
 
-  buildInputs = [ gambit ]
-    ++ buildInputs_libraries; # ++ buildInputs_staticLibraries;
+  buildInputs = gambitPkgs ++ buildInputs_libraries; # ++ buildInputs_staticLibraries;
 
   env.NIX_CFLAGS_COMPILE = "-I${libmysqlclient}/include/mysql -L${libmysqlclient}/lib/mysql";
 
@@ -29,6 +34,7 @@ stdenv.mkDerivation rec {
     grep -Fl '#!/usr/bin/env' `find . -type f -executable` | while read f ; do
       substituteInPlace "$f" --replace '#!/usr/bin/env' '#!${coreutils}/bin/env' ;
     done ;
+    ${extraPatch}
   '';
 
 ## TODO: make static compilation work.
@@ -47,17 +53,19 @@ stdenv.mkDerivation rec {
 # LEVELDB=${makeStaticLibraries leveldb}/lib/libleveldb.a
 # EOF
 
+  configureFlags = [
+    "--prefix=$out/gerbil"
+    "--enable-libxml"
+    "--enable-libyaml"
+    "--enable-zlib"
+    "--enable-sqlite"
+    "--enable-mysql"
+    "--enable-lmdb"
+    "--enable-leveldb"
+  ] ++ extraConfigureFlags;
+
   configurePhase = ''
-    (cd src && ./configure \
-      --prefix=$out/gerbil \
-      --with-gambit=${gambit}/gambit \
-      --enable-libxml \
-      --enable-libyaml \
-      --enable-zlib \
-      --enable-sqlite \
-      --enable-mysql \
-      --enable-lmdb \
-      --enable-leveldb)
+    (cd ${configureDir} ; ./configure ${builtins.concatStringsSep " " configureFlags})
   '';
 
   buildPhase = ''
@@ -68,7 +76,7 @@ stdenv.mkDerivation rec {
     export GERBIL_BUILD_CORES=$NIX_BUILD_CORES
     export GERBIL_GXC=$PWD/bin/gxc
     export GERBIL_BASE=$PWD
-    export GERBIL_HOME=$PWD
+    export ${GERBIL_PREFIX_var}=$PWD
     export GERBIL_PATH=$PWD/lib
     export PATH=$PWD/bin:$PATH
     ${gambit-support.export-gambopt gambit-params}
@@ -82,7 +90,7 @@ stdenv.mkDerivation rec {
   installPhase = ''
     runHook preInstall
     mkdir -p $out/gerbil $out/bin
-    (cd src; ./install)
+    ${install}
     (cd $out/bin ; ln -s ../gerbil/bin/* .)
     runHook postInstall
   '';
@@ -98,4 +106,6 @@ stdenv.mkDerivation rec {
     platforms   = lib.platforms.unix;
     maintainers = with lib.maintainers; [ fare ];
   };
+
+  outputsToInstall = [ "out" ];
 }
