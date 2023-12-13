@@ -1,10 +1,11 @@
 {
-  gccStdenv,
+  gcc13Stdenv,
   lib,
   coreutils,
   openssl,
   zlib,
   sqlite,
+  # git, openssh,
   version,
   git-version,
   src,
@@ -17,7 +18,7 @@
 
 # We use Gambit, that works 10x better with GCC than Clang. See ../gambit/build.nix
 let
-  stdenv = gccStdenv;
+  stdenv = gcc13Stdenv;
 in
 
 stdenv.mkDerivation rec {
@@ -35,7 +36,7 @@ stdenv.mkDerivation rec {
   # or give up and delete all tentative support for static libraries.
   #buildInputs_staticLibraries = map makeStaticLibraries buildInputs_libraries;
 
-  buildInputs = buildInputs_libraries;
+  buildInputs = buildInputs_libraries; # ++ [ git openssh ];
 
   postPatch = ''
     patchShebangs . ;
@@ -48,10 +49,10 @@ stdenv.mkDerivation rec {
     gambit_stamp_ymd=${gambit-stampYmd}
     gambit_stamp_hms=${gambit-stampHms}
     EOF
-    for f in src/bootstrap/gerbil/compiler/driver__0.scm \
+    for f in src/bootstrap/gerbil/compiler/driver*0.scm \
              src/build/build-libgerbil.ss \
              src/gerbil/compiler/driver.ss ; do
-      substituteInPlace "$f" --replace '"gcc"' '"${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}gcc"' ;
+      substituteInPlace "$f" --replace '"gcc"' '"${stdenv.cc}/bin/${stdenv.cc.targetPrefix}gcc"' ;
     done
   '';
 
@@ -70,16 +71,16 @@ stdenv.mkDerivation rec {
     "--prefix=$out/gerbil"
     "--enable-zlib"
     "--enable-sqlite"
-    "--enable-shared"
+    # "--enable-shared" # Not for v0.18.2 and later...
     "--enable-march=" # Avoid non-portable invalid instructions. Use =native if local build only.
   ];
 
   configurePhase = ''
-    export CC=${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}gcc \
-           CXX=${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}g++ \
-           CPP=${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}cpp \
-           CXXCPP=${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}cpp \
-           LD=${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}ld \
+    export CC=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}gcc \
+           CXX=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}g++ \
+           CPP=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cpp \
+           CXXCPP=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cpp \
+           LD=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}ld \
            XMKMF=${coreutils}/bin/false
     unset CFLAGS LDFLAGS LIBS CPPFLAGS CXXFLAGS
     ./configure ${builtins.concatStringsSep " " configureFlags}
@@ -95,6 +96,7 @@ stdenv.mkDerivation rec {
     runHook preBuild
 
     # gxprof testing uses $HOME/.cache/gerbil/gxc
+    echo NIX_BUILD_CORES=$NIX_BUILD_CORES
     export HOME=$PWD
     export GERBIL_BUILD_CORES=$NIX_BUILD_CORES
     export GERBIL_GXC=$PWD/bin/gxc
@@ -107,7 +109,7 @@ stdenv.mkDerivation rec {
     # Build, replacing make by build.sh
     ( cd src && sh build.sh )
 
-    f=build/lib/libgerbil.so.ldd ; [ -f $f ] && :
+    f=(build/lib/libgerbil*.ldd) ; [ -f $f[0] ] &&
     substituteInPlace "$f" --replace '(' \
       '(${lib.strings.concatStrings (map (x: "\"${x}\" ") extraLdOptions)}'
 
@@ -121,11 +123,11 @@ stdenv.mkDerivation rec {
       ./install.sh
       (cd $out/bin ; ln -s ../gerbil/bin/* .)
       runHook postInstall
-    ''
-    + lib.optionalString stdenv.hostPlatform.isDarwin ''
-      libgerbil="$(realpath "$out/gerbil/lib/libgerbil.so")"
-      install_name_tool -id "$libgerbil" "$libgerbil"
     '';
+    ##+ lib.optionalString stdenv.hostPlatform.isDarwin ''
+    ##  libgerbil="$(realpath "$out/gerbil/lib/libgerbil.so")"
+    ##  install_name_tool -id "$libgerbil" "$libgerbil"
+    ##'';
 
   dontStrip = true;
 
