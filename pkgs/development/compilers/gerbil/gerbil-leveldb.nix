@@ -8,8 +8,8 @@
 
 {
   pname = "gerbil-leveldb";
-  version = "unstable-2023-09-23";
-  git-version = "c62e47f";
+  version = "unstable-2024-04-11";
+  git-version = "9386da1";
   gerbil-package = "clan";
   gerbilInputs = [ ];
   nativeBuildInputs = [ pkgs.pkg-config ];
@@ -21,8 +21,8 @@
     fun = fetchFromGitHub;
     owner = "mighty-gerbils";
     repo = "gerbil-leveldb";
-    rev = "c62e47f352377b6843fb3e4b27030762a510a0d8";
-    sha256 = "177zn1smv2zq97mlryf8fi7v5gbjk07v5i0dix3r2wsanphaawvl";
+    rev = "9386da1a0570eb428c9bb1faf9be66694ba5b91a";
+    sha256 = "0j49kzvwcbd14nmfvhywwivggvq7qvn8qpl4spklzx4gd89s32my";
   };
 
   meta = with lib; {
