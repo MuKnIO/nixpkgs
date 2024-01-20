@@ -8,8 +8,8 @@
 
 {
   pname = "gerbil-mysql";
-  version = "unstable-2023-09-23";
-  git-version = "ecec94c";
+  version = "unstable-2025-08-24";
+  git-version = "a6d9af1";
   gerbil-package = "clan";
   gerbilInputs = [ ];
   nativeBuildInputs = [ pkgs.pkg-config ];
@@ -21,8 +21,8 @@
     fun = fetchFromGitHub;
     owner = "mighty-gerbils";
     repo = "gerbil-mysql";
-    rev = "ecec94c76d7aa23331b7e02ac7732a7923f100a5";
-    sha256 = "01506r0ivgp6cxvwracmg7pwr735ngb7899ga3lxy181lzkp6b2c";
+    rev = "a6d9af11b45666e47f1bf88f9bbc6ba887ae3a63";
+    sha256 = "0xami9kid9axnwcr7njizpnm96y3pbk32fyys7srdbrbfpifym0q";
   };
 
   meta = {

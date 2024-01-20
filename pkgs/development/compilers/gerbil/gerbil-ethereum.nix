@@ -9,8 +9,8 @@
 
 rec {
   pname = "gerbil-ethereum";
-  version = "unstable-2023-12-04";
-  git-version = "0.2-11-g124ec58";
+  version = "unstable-2025-06-19";
+  git-version = "0.2-15-g850a0a3";
   softwareName = "Gerbil-ethereum";
   gerbil-package = "clan/ethereum";
   version-path = "version";
@@ -27,8 +27,8 @@ rec {
     fun = fetchFromGitHub;
     owner = "mighty-gerbils";
     repo = "gerbil-ethereum";
-    rev = "124ec585157e2c505cd3c449a389c124ca6da9e9";
-    sha256 = "0xg07k421r5p0qx98id66k0k2l3vi1is875857sd8q3h6bks0z54";
+    rev = "850a0a36310d962da207e504defed2c47d8b20d8";
+    sha256 = "05kafpfxlpg7m0hxmpamzz6l53dg20n13ri7m099qgvdr3m5xk2y";
   };
 
   postInstall = ''

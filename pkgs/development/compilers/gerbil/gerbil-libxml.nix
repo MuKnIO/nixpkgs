@@ -8,8 +8,8 @@
 
 {
   pname = "gerbil-libxml";
-  version = "unstable-2023-09-23";
-  git-version = "b08e5d8";
+  version = "unstable-2025-08-16";
+  git-version = "c1d9b0a";
   gerbil-package = "clan";
   gerbilInputs = [ ];
   nativeBuildInputs = [ pkgs.pkg-config ];
@@ -21,8 +21,8 @@
     fun = fetchFromGitHub;
     owner = "mighty-gerbils";
     repo = "gerbil-libxml";
-    rev = "b08e5d8fe4688a162824062579ce152a10adb4cf";
-    sha256 = "1zfccqaibwy2b3srwmwwgv91dwy1xl18cfimxhcsxl6mxvgm61pd";
+    rev = "c1d9b0a026cd98234ab15cc4aec05c78781817cc";
+    sha256 = "05lkf938rk8nlaf5a1blarljhds09afrxsvb4p97hlv3hfqzfp0s";
   };
 
   meta = {

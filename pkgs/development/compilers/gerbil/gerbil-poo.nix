@@ -7,8 +7,8 @@
 
 {
   pname = "gerbil-poo";
-  version = "unstable-2023-11-29";
-  git-version = "0.2-5-gacf654e";
+  version = "unstable-2025-09-19";
+  git-version = "0.2-24-g1c32256";
   softwareName = "Gerbil-POO";
   gerbil-package = "clan/poo";
   version-path = "version";
@@ -19,8 +19,8 @@
     fun = fetchFromGitHub;
     owner = "mighty-gerbils";
     repo = "gerbil-poo";
-    rev = "acf654eb040c548da260a7a5d52bafb057d23541";
-    sha256 = "1pxv1j6hwcgjj67bb7vvlnyl3123r43ifldm6alm76v2mfp2vs81";
+    rev = "1c3225637525400341a09e958296962c10184ead";
+    sha256 = "1777gcif2x5cah271c9z7n1c7s4x0mb9gwcc55j9wnz1jqc4af3s";
   };
 
   meta = {
