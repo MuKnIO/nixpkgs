@@ -1,5 +1,4 @@
 {
-  gccStdenv,
   lib,
   pkgs,
   git,
@@ -34,7 +33,9 @@
 # Overall, -Os seems like the best choice, but I care more about compile-time,
 # so I stick with -O1 (in the defaults above), which is also the default for Gambit.
 
-gccStdenv.mkDerivation rec {
+let stdenv = gambit-support.stdenv; in
+
+stdenv.mkDerivation rec {
 
   pname = "gambit";
   inherit src version git-version;
@@ -102,14 +103,14 @@ gccStdenv.mkDerivation rec {
   # https://gcc.gnu.org/onlinedocs/gcc-4.8.4/gcc/i386-and-x86-64-Options.html#i386-and-x86-64-Options
   # ++ lib.optional pkgs.stdenv.hostPlatform.isx86_64 "--enable-march=core-avx2"
   # Do not enable poll on darwin due to https://github.com/gambit/gambit/issues/498
-  ++ lib.optional (!gccStdenv.hostPlatform.isDarwin) "--enable-poll";
+  ++ lib.optional (!stdenv.hostPlatform.isDarwin) "--enable-poll";
 
   configurePhase = ''
-    export CC=${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}gcc \
-           CXX=${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}g++ \
-           CPP=${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}cpp \
-           CXXCPP=${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}cpp \
-           LD=${gccStdenv.cc}/bin/${gccStdenv.cc.targetPrefix}ld \
+    export CC=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}gcc \
+           CXX=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}g++ \
+           CPP=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cpp \
+           CXXCPP=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cpp \
+           LD=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}ld \
            XMKMF=${coreutils}/bin/false
     unset CFLAGS LDFLAGS LIBS CPPFLAGS CXXFLAGS
 
@@ -121,7 +122,7 @@ gccStdenv.mkDerivation rec {
     substituteInPlace config.status \
       ${
         lib.optionalString (
-          gccStdenv.hostPlatform.isDarwin && !gambit-params.stable
+          stdenv.hostPlatform.isDarwin && !gambit-params.stable
         ) ''--replace "/usr/local/opt/openssl@1.1" "${lib.getLib openssl}"''
       } \
         --replace "/usr/local/opt/openssl" "${lib.getLib openssl}"

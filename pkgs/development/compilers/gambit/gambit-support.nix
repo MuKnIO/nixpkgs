@@ -1,6 +1,8 @@
 { pkgs, lib }:
 
 rec {
+  stdenv = pkgs.gcc14Stdenv;
+
   stable-params = {
     stable = true;
     defaultRuntimeOptions = "iL,fL,-L,tL";

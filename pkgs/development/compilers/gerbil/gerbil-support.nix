@@ -6,6 +6,9 @@
 }:
 
 let
+  # We use Gambit, that works 10x better with GCC than Clang. See ../gambit/build.nix
+  stdenv = pkgs.gambit-support.stdenv;
+
   inherit (builtins) filterSource;
 
   inherit (lib)
@@ -48,6 +51,8 @@ let
 in
 
 {
+  inherit stdenv;
+
   pppToName = ppp: removeSuffix ".nix" (baseNameOf ppp); # from pre-package path to name
   callPpp = ppp: callPackage ppp prePackage-defaults; # from pre-package path to pre-package
   pppToKV = ppp: {
@@ -62,7 +67,8 @@ in
     ./gerbil-mysql.nix
     ./gerbil-libxml.nix
     ./gerbil-libyaml.nix
-    ./smug-gerbil.nix # ./ftw.nix
+    ./smug-gerbil.nix
+    # ./ftw.nix
     ./gerbil-utils.nix
     ./gerbil-crypto.nix
     ./gerbil-poo.nix
@@ -196,8 +202,7 @@ in
         ;
       buildInputs_ = buildInputs;
     in
-    pkgs.gccStdenv.mkDerivation rec {
-      # See ../gambit/build.nix regarding why we use gccStdenv
+    stdenv.mkDerivation rec {
       inherit
         meta
         pname
@@ -206,7 +211,7 @@ in
         postInstall
         ;
       passthru = {
-        inherit pre-pkg;
+        inherit pre-pkg stdenv;
       };
       src = resolve-pre-src pre-src;
       buildInputs = [ gerbil ] ++ gerbilInputs ++ buildInputs_;

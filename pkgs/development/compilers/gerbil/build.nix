@@ -1,5 +1,4 @@
 {
-  gccStdenv,
   lib,
   coreutils,
   openssl,
@@ -15,10 +14,7 @@
   gambit-params,
 }:
 
-# We use Gambit, that works 10x better with GCC than Clang. See ../gambit/build.nix
-let
-  stdenv = gccStdenv;
-in
+let stdenv = gambit-support.stdenv; in
 
 stdenv.mkDerivation rec {
   pname = "gerbil";
